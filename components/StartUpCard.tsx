@@ -1,11 +1,16 @@
 
-import { convertDate } from '@/lib/utils'
+import { cn, convertDate } from '@/lib/utils'
 import { EyeIcon } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from './ui/button'
+import { Author, Startup } from '@/sanity/types'
+import { Skeleton } from './ui/skeleton'
 
-const StartUpCard = ({ post }) => {
+
+export type StartupTypeCard = Omit<Startup, "author"> & { author?: Author }
+
+const StartUpCard = ({ post }: { post: StartupTypeCard }) => {
     const { _createdAt, views, author, _id, description, image, category, title } = post
     return (
         <li className='startup-card group'>
@@ -34,20 +39,20 @@ const StartUpCard = ({ post }) => {
                     </Link>
                 </div>
                 <Link href={`/user/${author?._id}`}>
-                    <Image src={'https://placehold.co/48x48'} width={50} height={50} alt="Author" className='rounded-full' />
+                    <Image src={author?.image || 'https://placehold.co/50x50'} width={50} height={50} alt="Author" className='rounded-full' />
                 </Link>
             </div>
             <Link href={`/startup/${_id}`}>
                 <p className='startup-card_desc '>
                     {description}
                 </p>
-                <Image src={image} width={400} height={400} alt="placeholder" className='startup-card_img' />
+                <Image src={image || 'https://placehold.co/400x400'} width={400} height={400} alt="placeholder" className='startup-card_img' />
             </Link>
             <div className='flex-between gap-5 mt-5'>
-                <Link href={`/?query=${category.toLowerCase()}`}>
+                <Link href={`/?query=${category?.toLowerCase()}`}>
                     <p className='text-16-medium'>
                         {category}
-                    </p> 
+                    </p>
                 </Link>
                 <Button className='startup-card_btn' asChild>
                     <Link href={`/startup/${_id}`}>
@@ -59,4 +64,13 @@ const StartUpCard = ({ post }) => {
     )
 }
 
+export const StartupCardSkeleton = () => (
+    <>
+        {[0, 1, 2, 3, 4].map((index: number) => (
+            <li key={cn("skeleton", index)}>
+                <Skeleton className="startup-card_skeleton" />
+            </li>
+        ))}
+    </>
+);
 export default StartUpCard
